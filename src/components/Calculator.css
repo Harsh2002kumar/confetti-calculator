@@ -125,7 +125,7 @@
   padding: 10px;
 }
 
-.calculator.light {
+/* .calculator.light {
   background-color: white;
   color: black;
 }
@@ -133,6 +133,16 @@
 .calculator.dark {
   background-color: black;
   color: white;
+} */
+
+.calculator.light-mode {
+  background-color: red;
+  color: yellow;
+}
+
+.calculator.dark-mode {
+  background-color: yellow;
+  color: red;
 }
 
 .clear-history {

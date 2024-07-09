@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Display from "./Display";
 import Button from "./Button";
+import Confetti from "react-confetti-explosion";
 import "./Calculator.css";
 
 const Calculator = () => {
@@ -8,9 +9,26 @@ const Calculator = () => {
   const [operator, setOperator] = useState(null);
   const [firstOperand, setFirstOperand] = useState(null);
   const [secondOperand, setSecondOperand] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  // const [error, setError] = useState(false);
 
   const [theme, setTheme] = useState("light");
   const [history, setHistory] = useState([]);
+
+  const checkConfetti = () => {
+    const regex = /\b5\b.*\b6\b|\b6\b.*\b5\b/;
+    if (regex.test(displayValue)) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
+    }
+  };
+
+  useEffect(() => {
+    document.documentElement.className = theme;
+    document.body.style.backgroundColor = `${
+      theme === "dark" ? "#1a202c" : "#f7fafc"
+    }`;
+  }, [theme]);
 
   const handleButtonClick = (value) => {
     if (["+", "-", "*", "÷"].includes(value)) {
@@ -65,6 +83,7 @@ const Calculator = () => {
         symbol(value);
     }
   };
+
   const handleOperatorClick = (nextOperator) => {
     const currInp = parseFloat(displayValue);
 
@@ -93,6 +112,7 @@ const Calculator = () => {
         break;
     }
   };
+
   const equalClick = () => {
     if (operator && firstOperand !== null) {
       const secondOperand = parseFloat(displayValue);
@@ -200,7 +220,7 @@ const Calculator = () => {
         setDisplayValue(Math.sqrt(currInp).toString());
         break;
       case "3√x":
-        setDisplayValue(Math.cqrt(currInp).toString());
+        setDisplayValue(Math.cbrt(currInp).toString());
         break;
       case "y√x":
         break;
@@ -241,8 +261,8 @@ const Calculator = () => {
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
-
   const clearHistory = () => {
+    checkConfetti();
     setHistory([]);
   };
 
@@ -323,34 +343,47 @@ const Calculator = () => {
     }
   };
   return (
-    <div className="calculator">
-      <div className="dots">
-        <div className="dot red"></div>
-        <div className="dot yellow"></div>
-        <div className="dot green"></div>
-      </div>
+    <div className={`container ${theme} h-screen w-screen overflow-hidden`}>
+      <div className="calculator">
+        <h2
+          className={`display w-[100%] sm:w-[70vw] md:w-[60vw] lg:w-[50vw] ${
+            theme === "dark" ? "bg-white" : "bg-dark_grey text-white"
+          }`}
+        >
+          {displayValue ? displayValue : "0"}
+        </h2>
+        {showConfetti && <Confetti />}
 
-      <button onClick={toggleTheme}>
-        {theme === "light" ? "Dark Mode" : "Light Mode"}
-      </button>
+        <div className="calculator">
+          <div className="dots">
+            <div className="dot red"></div>
+            <div className="dot yellow"></div>
+            <div className="dot green"></div>
+          </div>
 
-      <Display value={displayValue} />
+          <button onClick={toggleTheme}>
+            {theme === "dark" ? "Dark Mode" : "Light Mode"}
+          </button>
 
-      <div className="history">
-        {history.map((item, index) => (
-          <div key={index}>{item}</div>
-        ))}
-      </div>
+          <Display value={displayValue} />
 
-      <div className="buttons">
-        {buttons.map((value, index) => (
-          <Button
-            key={index}
-            value={value}
-            className={getButtonClassName(value)}
-            onClick={() => handleButtonClick(value)}
-          />
-        ))}
+          <div className="history">
+            {history.map((item, index) => (
+              <div key={index}>{item}</div>
+            ))}
+          </div>
+
+          <div className="buttons">
+            {buttons.map((value, index) => (
+              <Button
+                key={index}
+                value={value}
+                className={getButtonClassName(value)}
+                onClick={() => handleButtonClick(value)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
